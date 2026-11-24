@@ -1,12 +1,12 @@
 {
-  "id": "/index.html",
+  "id": "/samgzavro-servisi/",
   "name": "სამგზავრო დამხმარე",
   "short_name": "მგზავრი",
   "description": "თბილისის საზოგადოებრივი ტრანსპორტის გადახდისა და დამხმარე აპლიკაცია",
   "lang": "ka",
   "dir": "ltr",
-  "start_url": "/index.html",
-  "scope": "/",
+  "start_url": "/samgzavro-servisi/",
+  "scope": "/samgzavro-servisi/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#F8FAFC",
@@ -14,8 +14,8 @@
   "handle_links": "preferred",
   "capture_links": "existing-client-navigate",
   "icons": [
-    {"src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
-    {"src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
-    {"src": "/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+    {"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
   ]
 }
