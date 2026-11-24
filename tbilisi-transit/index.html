@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0F62FE">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="მგზავრი">
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" type="image/png" href="/icons/icon-192.png">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<title>სამგზავრო დამხმარე</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root{--p:#0F62FE;--p2:#0284C7;--g:#10B981;--bg:#F8FAFC;--c:#fff;--t:#0F172A;--m:#64748B;--l:#E2E8F0;--y:#FACC15;--r:#EF4444}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+html,body{height:100%;background:#F8FAFC;overscroll-behavior:none;font-family:'Noto Sans Georgian',system-ui,-apple-system,sans-serif;color:var(--t);user-select:none;-webkit-user-select:none}
+input{user-select:text;-webkit-user-select:text;font-family:inherit}
+button{font-family:inherit;border:0;background:none;color:inherit;cursor:pointer}
+.app{position:fixed;inset:0;width:100%;min-height:100dvh;background:var(--bg);overflow:hidden}
+header{position:fixed;top:0;left:0;right:0;z-index:20;padding:calc(env(safe-area-inset-top,0px) + 14px) 18px 12px;background:rgba(255,255,255,.78);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid rgba(226,232,240,.8)}
+.hrow{display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:17px}
+.logo i{width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,var(--p),var(--p2));display:grid;place-items:center;color:#fff}
+.ib{width:40px;height:40px;border-radius:14px;background:#EFF6FF;color:var(--p);display:grid;place-items:center;transition:.15s}
+.ib:active,.chip:active,.card:active,.pm:active{transform:scale(.95)}
+svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.banner{display:none;margin-top:10px;padding:10px 14px;border-radius:16px;background:linear-gradient(135deg,#059669,var(--g));color:#fff;align-items:center;justify-content:space-between;animation:pop .35s}
+.banner.on{display:flex}
+.banner b{font-size:22px;font-variant-numeric:tabular-nums;letter-spacing:.5px}
+.banner small{display:block;font-size:11px;opacity:.9}
+.dots{display:flex;gap:5px;margin-top:5px}.dots s{width:11px;height:11px;border-radius:50%;background:rgba(255,255,255,.35)}.dots s.f{background:#fff}
+@keyframes pop{from{transform:scale(.92);opacity:0}}
+.views{position:absolute;inset:0}
+.view{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:calc(env(safe-area-inset-top,0px) + 82px) max(16px,calc((100% - 720px)/2)) calc(env(safe-area-inset-bottom,0px) + 100px);opacity:0;pointer-events:none;transform:translateX(18px);transition:.3s cubic-bezier(.4,0,.2,1)}
+.view.on{opacity:1;pointer-events:auto;transform:none}
+body.pass .view{padding-top:calc(env(safe-area-inset-top,0px) + 150px)}
+nav{position:fixed;bottom:0;left:0;width:100%;z-index:20;display:flex;padding:8px 10px calc(env(safe-area-inset-bottom,0px) + 8px);background:rgba(255,255,255,.86);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 -6px 24px rgba(15,23,42,.08);border-top:1px solid var(--l)}
+nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 0;border-radius:20px;color:var(--m);font-size:11px;font-weight:600;transition:.25s}
+nav button.on{color:var(--p);background:#EFF6FF}
+.search{display:flex;align-items:center;gap:10px;background:var(--c);border-radius:18px;padding:0 14px;height:50px;box-shadow:0 2px 10px rgba(15,23,42,.05);color:var(--m)}
+.search input{flex:1;border:0;outline:0;font-size:15px;background:none;color:var(--t)}
+.pills{display:flex;gap:8px;margin:12px 0}
+.pill{padding:9px 16px;border-radius:14px;background:var(--c);font-size:13px;font-weight:600;color:var(--m);box-shadow:0 1px 6px rgba(15,23,42,.05);transition:.2s}
+.pill.on{background:var(--p);color:#fff}
+.card{display:flex;align-items:center;gap:12px;background:var(--c);padding:13px;border-radius:20px;margin-bottom:10px;box-shadow:0 3px 14px rgba(15,23,42,.05);transition:.15s;width:100%;text-align:left}
+.badge{min-width:62px;height:46px;border-radius:14px;display:grid;place-items:center;font-weight:800;font-size:16px;color:#fff;background:linear-gradient(135deg,var(--p),#0EA5A4)}
+.badge.m{background:linear-gradient(135deg,var(--p),var(--y));color:#0F172A;text-shadow:0 1px 0 rgba(255,255,255,.4)}
+.ci{flex:1;min-width:0}.ci b{display:block;font-size:14px}.ci span{font-size:12.5px;color:var(--m)}
+.tp{font-size:11px;font-weight:600;color:var(--p2)}
+.fare{font-weight:700;font-size:13px;padding:6px 10px;border-radius:10px;background:#EFF6FF;color:var(--p)}
+.fare.free{background:#D1FAE5;color:#047857}
+.empty{text-align:center;color:var(--m);padding:40px 0;font-size:14px}
+.ccard{border-radius:26px;padding:22px;color:#fff;background:linear-gradient(135deg,#0F62FE 0%,#0284C7 55%,#10B981 130%);box-shadow:0 16px 36px rgba(15,98,254,.32);position:relative;overflow:hidden}
+.ccard:after{content:"";position:absolute;right:-50px;top:-50px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.12)}
+.ccard small{opacity:.85;font-size:12px}.ccard h1{font-size:40px;margin:4px 0 18px;font-weight:800}
+.cn{letter-spacing:2px;font-size:14px;font-variant-numeric:tabular-nums}
+.st{display:inline-block;margin-top:12px;padding:5px 11px;border-radius:20px;background:rgba(255,255,255,.2);font-size:12px;font-weight:600}
+h3{font-size:15px;margin:22px 4px 10px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{flex:1;min-width:60px;padding:12px 0;border-radius:14px;background:var(--c);font-weight:700;color:var(--p);box-shadow:0 2px 8px rgba(15,23,42,.05);transition:.15s}
+.chip.on{background:var(--p);color:#fff}
+.row{display:flex;gap:8px;margin-top:10px}
+.inp{flex:1;height:48px;border-radius:14px;border:1.5px solid var(--l);padding:0 14px;font-size:15px;background:var(--c);outline:0}
+.inp:focus{border-color:var(--p)}
+.btn{height:48px;padding:0 20px;border-radius:14px;background:linear-gradient(135deg,var(--p),var(--p2));color:#fff;font-weight:700;font-size:15px;transition:.15s;box-shadow:0 6px 16px rgba(15,98,254,.28)}
+.btn:active{transform:scale(.97)}.btn.g{background:linear-gradient(135deg,#059669,var(--g));box-shadow:0 6px 16px rgba(16,185,129,.3)}.btn.o{background:#fff;color:var(--t);box-shadow:none;border:1.5px solid var(--l)}.btn.w{width:100%;height:54px;font-size:16px}
+.trip{display:flex;align-items:center;gap:12px;padding:12px 4px;border-bottom:1px solid var(--l)}
+.trip:last-child{border:0}
+.tb{font-size:11px;font-weight:700;padding:4px 9px;border-radius:9px;background:#EFF6FF;color:var(--p)}.tb.f{background:#D1FAE5;color:#047857}
+.pbox{background:var(--c);border-radius:22px;padding:16px;box-shadow:0 3px 14px rgba(15,23,42,.05)}
+.av{width:84px;height:84px;border-radius:50%;margin:0 auto;display:grid;place-items:center;color:#fff;font-size:30px;font-weight:800;background-size:cover;background-position:center;position:relative;box-shadow:0 8px 20px rgba(15,98,254,.3)}
+.av em{position:absolute;right:-2px;bottom:-2px;width:28px;height:28px;border-radius:50%;background:#fff;color:var(--p);display:grid;place-items:center;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.av em svg{width:15px;height:15px}
+.avs{display:flex;justify-content:center;gap:10px;margin:12px 0}.avs button{width:34px;height:34px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1.5px var(--l)}
+label{font-size:12px;color:var(--m);font-weight:600;display:block;margin:12px 0 5px}
+.pm{display:flex;align-items:center;gap:12px;padding:13px;border-radius:18px;background:var(--c);margin-bottom:9px;border:2px solid transparent;box-shadow:0 2px 10px rgba(15,23,42,.05);transition:.15s;width:100%;text-align:left}
+.pm.on{border-color:var(--g)}
+.logo2{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:13px}
+.radio{width:22px;height:22px;border-radius:50%;border:2px solid var(--l);display:grid;place-items:center}.pm.on .radio{background:var(--g);border-color:var(--g)}.pm.on .radio:after{content:"";width:8px;height:8px;border-radius:50%;background:#fff}
+.set{display:flex;align-items:center;justify-content:space-between;padding:15px 16px;background:var(--c);border-radius:18px;margin-bottom:9px;font-size:14px;font-weight:600;width:100%;box-shadow:0 2px 10px rgba(15,23,42,.05)}
+.tg{width:48px;height:28px;border-radius:20px;background:#CBD5E1;position:relative;transition:.25s}.tg:after{content:"";position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:.25s;box-shadow:0 1px 4px rgba(0,0,0,.25)}.tg.on{background:var(--g)}.tg.on:after{left:23px}
+.ov{position:fixed;inset:0;z-index:50;background:rgba(15,23,42,.45);backdrop-filter:blur(3px);display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:.25s}
+.ov.on{opacity:1;pointer-events:auto}.ov.mid{align-items:center;justify-content:center;padding:24px}
+.sheet{width:100%;max-width:560px;margin:0 auto;background:#fff;border-radius:30px 30px 0 0;padding:12px 22px calc(env(safe-area-inset-bottom,0px) + 22px);transform:translateY(100%);transition:.35s cubic-bezier(.2,.9,.3,1)}
+.ov.on .sheet{transform:none}
+.grab{width:42px;height:5px;border-radius:5px;background:var(--l);margin:0 auto 18px}
+.mod{width:100%;max-width:400px;background:#fff;border-radius:28px;padding:24px;text-align:center;transform:scale(.9);transition:.25s}.ov.on .mod{transform:none}
+.big{font-size:30px;font-weight:800;margin:6px 0 4px}
+.succ{z-index:60;background:linear-gradient(160deg,#059669,#10B981 60%,#0284C7);color:#fff;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px;backdrop-filter:none}
+.succ svg.ck{width:110px;height:110px;stroke-width:2.4}
+.succ circle,.succ path{stroke-dasharray:300;stroke-dashoffset:300}
+.succ.on circle{animation:dr .7s .1s forwards}.succ.on path{animation:dr .5s .6s forwards}
+@keyframes dr{to{stroke-dashoffset:0}}
+.cf{position:absolute;top:-10px;width:9px;height:14px;border-radius:3px;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(900px) rotate(720deg);opacity:.2}}
+#toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 16px);transform:translate(-50%,-90px);z-index:90;background:#0F172A;color:#fff;padding:12px 18px;border-radius:16px;font-size:13px;font-weight:600;transition:.35s;max-width:88%;text-align:center}
+#toast.on{transform:translate(-50%,0)}
+#qrbox{display:grid;place-items:center;margin:16px auto;padding:14px;background:#fff;border-radius:18px;width:fit-content;border:1px solid var(--l)}
+.url{font-size:11px;color:var(--m);word-break:break-all;margin-bottom:14px}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+<header>
+  <div class="hrow">
+    <div class="logo" id="logo"><i><svg viewBox="0 0 24 24" style="width:20px;height:20px"><rect x="4" y="3" width="16" height="14" rx="3"/><path d="M4 11h16M8 21v-4M16 21v-4"/><circle cx="8" cy="14" r=".6"/><circle cx="16" cy="14" r=".6"/></svg></i>სამგზავრო დამხმარე</div>
+    <button class="ib" id="scan" aria-label="სკანერი"><svg viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 12h10"/></svg></button>
+  </div>
+  <div class="banner" id="banner"><div><small>უფასო გადაჯდომის დრო</small><b id="clock">01:30:00</b></div><div style="text-align:right"><small>უფასო მგზავრობა: <span id="left">3/3</span></small><div class="dots" id="dots" style="justify-content:flex-end"></div></div></div>
+</header>
+
+<div class="views">
+ <section class="view" id="v0">
+  <div class="ccard"><small>ბალანსი</small><h1 id="bal">3.79 ₾</h1><div class="cn">4521 8830 1947 3306</div><span class="st" id="pst">90 წუთიანი უფასო გადაჯდომა: არააქტიური</span></div>
+  <h3>ბალანსის შევსება</h3>
+  <div class="chips" id="chips"></div>
+  <div class="row"><input class="inp" id="cust" type="number" inputmode="decimal" min="1" placeholder="სხვა თანხა, ₾"><button class="btn g" id="topup">შევსება</button></div>
+  <div style="font-size:12px;color:var(--m);margin:8px 4px" id="viaTxt"></div>
+  <h3>ბოლო მგზავრობები</h3>
+  <div class="pbox" id="trips"></div>
+ </section>
+
+ <section class="view on" id="v1">
+  <div class="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" placeholder="მარშრუტი, უბანი ან ქუჩა…" inputmode="search"></div>
+  <div class="pills" id="pills"></div>
+  <div id="list"></div>
+ </section>
+
+ <section class="view" id="v2">
+  <div class="pbox" style="text-align:center">
+    <div class="av" id="av"><span id="ini"></span><em><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></em></div>
+    <input type="file" id="file" accept="image/*" hidden>
+    <div class="avs" id="avs"></div>
+    <label style="text-align:left">სახელი და გვარი</label><input class="inp" id="nm" style="width:100%">
+    <label style="text-align:left">ელ-ფოსტა</label><input class="inp" id="em" type="email" style="width:100%">
+  </div>
+  <h3>გადახდის მეთოდები</h3><div id="pms"></div>
+  <h3>პარამეტრები</h3>
+  <button class="set" id="auto"><span>ავტომატური შევსება <small style="display:block;color:var(--m);font-weight:400;font-size:12px">როცა ბალანსი 1 ₾-ზე ნაკლებია</small></span><span class="tg" id="autoTg"></span></button>
+  <button class="set" id="showqr"><span>დემო QR კოდის ჩვენება</span><svg viewBox="0 0 24 24"><path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h3v3h-3zM20 14v7h-3"/></svg></button>
+  <button class="set" id="reset"><span>დემოს განულება</span><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/></svg></button>
+  <button class="btn o w" id="logout" style="color:var(--r);margin-top:8px">გასვლა</button>
+ </section>
+</div>
+
+<nav>
+ <button data-t="0"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20M6 15h4"/></svg>ბალანსი</button>
+ <button data-t="1" class="on"><svg viewBox="0 0 24 24"><path d="m3 11 9-8 9 8M5 10v10h5v-6h4v6h5V10"/></svg>მთავარი</button>
+ <button data-t="2"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>ჩემი პროფილი</button>
+</nav>
+
+<div class="ov" id="sheetOv"><div class="sheet"><div class="grab"></div>
+  <div style="display:flex;gap:14px;align-items:center"><div class="badge" id="sB"></div><div class="ci"><b id="sT"></b><span id="sR"></span></div></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin:20px 0;padding:16px;border-radius:18px;background:#F1F5F9"><span style="color:var(--m);font-size:13px">გადასახდელი თანხა:</span><b id="sF" style="font-size:18px"></b></div>
+  <div style="display:flex;gap:10px"><button class="btn o" id="sX" style="flex:1">გაუქმება</button><button class="btn" id="sP" style="flex:2">გადახდა</button></div>
+</div></div>
+
+<div class="ov mid" id="modOv"><div class="mod"><div id="mT" style="font-weight:700;font-size:17px;margin-bottom:6px"></div><div id="mD" style="color:var(--m);font-size:14px;margin-bottom:20px"></div><div style="display:flex;gap:10px"><button class="btn o" id="mN" style="flex:1">გაუქმება</button><button class="btn" id="mY" style="flex:1"></button></div></div></div>
+
+<div class="ov mid" id="qrOv"><div class="mod"><b style="font-size:17px">დემო QR კოდი</b><div style="color:var(--m);font-size:13px;margin-top:4px">დაასკანერეთ ტელეფონის კამერით</div><div id="qrbox"></div><div class="url" id="qurl"></div><button class="btn w" id="qX">დახურვა</button></div></div>
+
+<div class="ov succ" id="succ"><svg class="ck" viewBox="0 0 120 120"><circle cx="60" cy="60" r="48"/><path d="M38 62l16 16 30-34"/></svg><div class="big" id="scT" style="font-size:24px;margin-top:20px"></div><p id="scD" style="opacity:.92;font-size:14px;line-height:1.6;max-width:300px"></p><button class="btn w" id="scX" style="background:#fff;color:#047857;margin-top:28px;max-width:300px;box-shadow:none">კარგი</button></div>
+<div id="toast"></div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const BUS=[[301,'პოლიტექნიკური','ვარკეთილი'],[302,'დიდი დიღომი','უნივერსიტეტის მაღლივი კორპუსი'],[304,'გლდანი','ვაკე'],[306,'მუხიანი','ორთაჭალა'],[308,'გლდანი','ბარათაშვილის ქ.'],[310,'დიღმის მასივი','ვაგზლის მოედანი'],[314,'დიდი დიღომი','ბარათაშვილის ქ.'],[320,'ვაზისუბანი','ვაკე'],[323,'გლდანი','თავისუფლების მოედანი'],[337,'აეროპორტი','ვაგზლის მოედანი'],[345,'ისანი','ვაკე'],[351,'საბურთალო','ორთაჭალა'],[359,'ვაკე','ვარკეთილი'],[383,'დიდი დიღომი','ვაკე'],[388,'ნუცუბიძის პლატო','ბარათაშვილის ქ.'],[392,'გლდანი','საბურთალო']].map(a=>({n:a[0],a:a[1],b:a[2],t:'b'}));
+const MIN=[[401,'ავჭალა','რუსთაველის მეტრო'],[405,'ლილო','ვარკეთილი'],[422,'თემქა','სადგურის მოედანი'],[431,'ვაზისუბანი','დიდუბე'],[442,'სანზონა','ისანი'],[450,'მთაწმინდა','ვერის პარკი'],[457,'გლდანი','ნაძალადევი'],[462,'ვარკეთილი','სამგორი'],[466,'დიღომი','ვაკე'],[472,'საბურთალო','ავლაბარი'],[476,'ორთაჭალა','ფონიჭალა'],[493,'სოლოლაკი','ზაჰესი'],[504,'ლოტკინი','დიდუბე'],[512,'გლდანის ტბა','ბეღლეთი'],[518,'წყნეთი','საბურთალო'],[531,'ვაშლიჯვარი','თელავის ქ.'],[534,'ისანი','სამგორი'],[540,'ვარკეთილი','ლილო'],[547,'ნუცუბიძე','მთაწმინდა'],[550,'კრწანისი','ავლაბარი']].map(a=>({n:a[0],a:a[1],b:a[2],t:'m'}));
+const ALL=[...BUS,...MIN];
+const PM={bog:{n:'საქართველოს ბანკი',s:'•••• 4829',c:'linear-gradient(135deg,#F97316,#EA580C)',l:'BoG'},tbc:{n:'თიბისი ბანკი',s:'•••• 9104',c:'linear-gradient(135deg,#00A3E0,#0F62FE)',l:'TBC'},gp:{n:'Google Pay',s:'დაკავშირებულია',c:'linear-gradient(135deg,#4285F4,#34A853)',l:'G Pay'}};
+const AVG=['linear-gradient(135deg,#0F62FE,#10B981)','linear-gradient(135deg,#F97316,#FACC15)','linear-gradient(135deg,#8B5CF6,#EC4899)','linear-gradient(135deg,#0EA5E9,#6366F1)'];
+const DEF={bal:3.79,pass:null,trips:[],name:'გიორგი ბერიძე',email:'giorgi.beridze@example.ge',av:{p:0},pm:'tbc',auto:false};
+let S;try{S=Object.assign({},DEF,JSON.parse(localStorage.getItem('sd_state')||'{}'))}catch(e){S={...DEF}}
+const save=()=>{try{localStorage.setItem('sd_state',JSON.stringify(S))}catch(e){}};
+let flt='all',cur=null,topSel=5;
+const fmt=n=>n.toFixed(2)+' ₾',p2=n=>String(n).padStart(2,'0');
+const active=()=>S.pass&&S.pass.end>Date.now()&&S.pass.left>0;
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('on'),2600)}
+function tab(i){$$('.view').forEach((v,k)=>{v.classList.toggle('on',k==i);v.style.transform=k<i?'translateX(-18px)':''});$$('nav button').forEach((b,k)=>b.classList.toggle('on',k==i))}
+$$('nav button').forEach(b=>b.onclick=()=>tab(+b.dataset.t));
+function ov(id,on){$(id).classList.toggle('on',on)}
+function confirmM(t,d,y,cb){$('#mT').textContent=t;$('#mD').textContent=d;$('#mY').textContent=y;ov('#modOv',1);$('#mY').onclick=()=>{ov('#modOv',0);cb()};$('#mN').onclick=()=>ov('#modOv',0)}
+
+function tick(){
+  if(S.pass&&(S.pass.end<=Date.now())){S.pass=null;save();toast('90 წუთიანი უფასო გადაჯდომა დასრულდა');render()}
+  const on=active()||(S.pass&&S.pass.end>Date.now());
+  $('#banner').classList.toggle('on',!!on);document.body.classList.toggle('pass',!!on);
+  if(on){const s=Math.max(0,Math.floor((S.pass.end-Date.now())/1000));$('#clock').textContent=`${p2(Math.floor(s/3600))}:${p2(Math.floor(s%3600/60))}:${p2(s%60)}`;$('#left').textContent=S.pass.left+'/3';$('#dots').innerHTML=[0,1,2].map(i=>`<s class="${i<S.pass.left?'f':''}"></s>`).join('')}
+}
+setInterval(tick,1000);
+
+function render(){
+  $('#bal').textContent=fmt(S.bal);
+  $('#pst').textContent=active()?`უფასო გადაჯდომა აქტიურია: ${S.pass.left}/3`:'90 წუთიანი უფასო გადაჯდომა: არააქტიური';
+  $('#viaTxt').textContent='გადახდის მეთოდი: '+PM[S.pm].n+' '+PM[S.pm].s;
+  $('#chips').innerHTML=[2,5,10,20].map(v=>`<button class="chip ${v==topSel?'on':''}" data-v="${v}">+${v} ₾</button>`).join('');
+  $$('.chip').forEach(c=>c.onclick=()=>{topSel=+c.dataset.v;$('#cust').value='';add(topSel)});
+  $('#trips').innerHTML=S.trips.length?S.trips.slice(0,30).map(t=>`<div class="trip"><div class="badge ${t.t=='m'?'m':''}" style="min-width:52px;height:40px;font-size:14px">№${t.n}</div><div class="ci"><b>${t.a} – ${t.b}</b><span>${t.d}</span></div><div style="text-align:right"><div class="tb ${t.f?'f':''}">${t.f?'უფასო გადაჯდომა':'გადახდილი'}</div><div style="font-size:12px;font-weight:700;margin-top:4px">${t.f?'0.00 ₾':'−1.00 ₾'}</div></div></div>`).join(''):'<div class="empty">მგზავრობები ჯერ არ გაქვთ</div>';
+  $('#pills').innerHTML=[['all','ყველა'],['b','ავტობუსი'],['m','მიკროავტობუსი']].map(([k,l])=>`<button class="pill ${flt==k?'on':''}" data-k="${k}">${l}</button>`).join('');
+  $$('.pill').forEach(p=>p.onclick=()=>{flt=p.dataset.k;render()});
+  list();
+  $('#pms').innerHTML=Object.entries(PM).map(([k,m])=>`<button class="pm ${S.pm==k?'on':''}" data-k="${k}"><div class="logo2" style="background:${m.c}">${m.l}</div><div class="ci"><b>${m.n}</b><span>${m.s}</span></div><span class="radio"></span></button>`).join('');
+  $$('.pm').forEach(b=>b.onclick=()=>{S.pm=b.dataset.k;save();render();toast('ძირითადი მეთოდი: '+PM[S.pm].n)});
+  $('#autoTg').classList.toggle('on',S.auto);
+  avatar();
+}
+function list(){
+  const q=$('#q').value.trim().toLowerCase(),f=active();
+  const r=ALL.filter(x=>(flt=='all'||x.t==flt)&&(!q||String(x.n).includes(q)||(x.a+' '+x.b).toLowerCase().includes(q)));
+  $('#list').innerHTML=r.length?r.map(x=>`<button class="card" data-n="${x.n}"><div class="badge ${x.t=='m'?'m':''}">№${x.n}</div><div class="ci"><b>${x.a} – ${x.b}</b><span class="tp">${x.t=='b'?'ავტობუსი':'მიკროავტობუსი'}</span></div><span class="fare ${f?'free':''}">${f?'უფასო':'1.00 ₾'}</span></button>`).join(''):'<div class="empty">მარშრუტი ვერ მოიძებნა. სცადეთ სხვა ნომერი ან უბნის სახელი.</div>';
+  $$('.card').forEach(c=>c.onclick=()=>openSheet(+c.dataset.n));
+}
+$('#q').oninput=list;
+
+function openSheet(n){
+  cur=ALL.find(x=>x.n==n);if(!cur)return;
+  $('#sB').textContent='№'+cur.n;$('#sB').className='badge '+(cur.t=='m'?'m':'');
+  $('#sT').textContent=cur.t=='b'?'ავტობუსი':'მიკროავტობუსი';$('#sR').textContent=cur.a+' – '+cur.b;
+  const f=active();$('#sF').textContent=f?'0.00 ₾ (უფასო გადაჯდომა)':'1.00 ₾';$('#sF').style.color=f?'#047857':'';
+  ov('#sheetOv',1);
+}
+$('#sX').onclick=()=>ov('#sheetOv',0);
+$('#sheetOv').onclick=e=>{if(e.target.id=='sheetOv')ov('#sheetOv',0)};
+
+function pay(){
+  const now=new Date(),d=`${p2(now.getDate())}.${p2(now.getMonth()+1)} · ${p2(now.getHours())}:${p2(now.getMinutes())}`;
+  let free=active();
+  if(!free&&S.bal<1){
+    if(S.auto){S.bal+=5;toast('ავტომატური შევსება: +5.00 ₾ ('+PM[S.pm].n+')')}
+    else{ov('#sheetOv',0);confirmM('არასაკმარისი ბალანსი','მგზავრობისთვის საჭიროა 1.00 ₾. შეავსეთ ბალანსი და სცადეთ თავიდან.','შევსება',()=>{tab(0);$('#cust').focus()});return}
+  }
+  ov('#sheetOv',0);
+  if(free){S.pass.left--;S.trips.unshift({...cur,d,f:1});done('უფასო გადაჯდომა დადასტურებულია! (0.00 ₾)',S.pass.left>0?`დარჩენილია კიდევ ${S.pass.left} უფასო მგზავრობა.`:'უფასო მგზავრობები ამოიწურა. შემდეგი მგზავრობა 1.00 ₾ დაგიჯდებათ.')}
+  else{S.bal-=1;S.pass={end:Date.now()+90*60000,left:3};S.trips.unshift({...cur,d,f:0});done('გადახდა წარმატებით შესრულდა!','საათნახევრის განმავლობაში შეგიძლიათ უფასოდ ისარგებლოთ კიდევ 3 ნებისმიერი ავტობუსით ან მიკროავტობუსით.')}
+  save();render();tick();
+}
+$('#sP').onclick=pay;
+function done(t,d){
+  $('#scT').textContent=t;$('#scD').textContent=d;const s=$('#succ');
+  s.querySelectorAll('.cf').forEach(e=>e.remove());
+  for(let i=0;i<36;i++){const c=document.createElement('i');c.className='cf';c.style.cssText=`left:${Math.random()*100}%;background:${['#fff','#FACC15','#0F62FE','#A7F3D0'][i%4]};animation-duration:${1.6+Math.random()*1.6}s;animation-delay:${Math.random()*.5}s`;s.appendChild(c)}
+  s.classList.remove('on');void s.offsetWidth;s.classList.add('on');
+  if(navigator.vibrate)navigator.vibrate(60);
+}
+$('#scX').onclick=()=>ov('#succ',0);
+
+function add(v){
+  if(!(v>0)||v>500){toast('შეიყვანეთ სწორი თანხა');return}
+  S.bal+=v;save();render();toast(`+${v.toFixed(2)} ₾ დაემატა · ${PM[S.pm].n}`);
+}
+$('#topup').onclick=()=>{const v=parseFloat($('#cust').value);add(v);$('#cust').value=''};
+
+function avatar(){
+  const a=$('#av'),ini=$('#ini');
+  if(S.av.img){a.style.backgroundImage=`url(${S.av.img})`;ini.textContent=''}
+  else{a.style.backgroundImage=AVG[S.av.p||0];ini.textContent=(S.name.trim()[0]||'?')+(S.name.trim().split(/\s+/)[1]?.[0]||'')}
+  $('#avs').innerHTML=AVG.map((g,i)=>`<button style="background:${g}" data-i="${i}" aria-label="ავატარი ${i+1}"></button>`).join('');
+  $$('#avs button').forEach(b=>b.onclick=()=>{S.av={p:+b.dataset.i};save();render()});
+}
+$('#av').onclick=()=>$('#file').click();
+$('#file').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{S.av={img:r.result,p:0};try{save()}catch(x){}render();toast('ფოტო განახლდა')};r.readAsDataURL(f)};
+$('#nm').value=S.name;$('#em').value=S.email;
+$('#nm').oninput=e=>{S.name=e.target.value;save();avatar()};
+$('#em').oninput=e=>{S.email=e.target.value;save()};
+$('#auto').onclick=()=>{S.auto=!S.auto;save();render();toast(S.auto?'ავტომატური შევსება ჩართულია':'ავტომატური შევსება გამორთულია')};
+$('#reset').onclick=()=>confirmM('დემოს განულება','ბალანსი დაუბრუნდება 3.79 ₾-ს, ისტორია და უფასო გადაჯდომა წაიშლება.','განულება',()=>{try{localStorage.removeItem('sd_state')}catch(e){}S={...DEF,trips:[]};$('#nm').value=S.name;$('#em').value=S.email;render();tick();toast('დემო განულებულია')});
+$('#logout').onclick=()=>confirmM('გასვლა','ნამდვილად გსურთ ანგარიშიდან გასვლა?','გასვლა',()=>{toast('თქვენ გამოხვედით ანგარიშიდან (დემო)');tab(1)});
+
+function qr(url){
+  $('#qurl').textContent=url;$('#qrbox').innerHTML='';
+  try{new QRCode($('#qrbox'),{text:url,width:200,height:200,colorDark:'#0F172A',colorLight:'#ffffff'})}catch(e){$('#qrbox').textContent='QR ვერ ჩაიტვირთა (საჭიროა ინტერნეტი)'}
+  ov('#qrOv',1);
+}
+const base=()=>location.href.split('?')[0].split('#')[0];
+$('#showqr').onclick=()=>qr(base()+'?route=301');
+$('#qX').onclick=()=>ov('#qrOv',0);
+let taps=0,tt;$('#logo').onclick=()=>{taps++;clearTimeout(tt);tt=setTimeout(()=>taps=0,700);if(taps>=3){taps=0;qr(location.href)}};
+$('#scan').onclick=()=>{toast('QR კოდი სკანირდება…');setTimeout(()=>{const r=ALL[Math.floor(Math.random()*ALL.length)];toast('ნაპოვნია: №'+r.n);openSheet(r.n)},1100)};
+
+render();tick();
+const P=new URLSearchParams(location.search),dl=P.get('bus')||P.get('route');
+if(dl&&ALL.some(x=>x.n==dl)){tab(1);setTimeout(()=>openSheet(+dl),400)}
+</script>
+<script>
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}))}
+</script>
+</body>
+</html>
