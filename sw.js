@@ -1,5 +1,5 @@
-const V = 'sd-v1';
-const SHELL = ['/', '/index.html', '/manifest.json', '/icons/icon-192.png', '/icons/icon-512.png'];
+const V = 'sd-v3';
+const SHELL = ['./', './index.html', './manifest.json', './icons/icon-192.png', './icons/icon-512.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(V).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
@@ -16,16 +16,14 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   const r = e.request;
   if (r.method !== 'GET') return;
-  // გვერდები: ჯერ ქსელი, ოფლაინში ქეშირებული index.html (?bus=301 ბმულებიც მუშაობს)
   if (r.mode === 'navigate') {
     e.respondWith(
       fetch(r)
-        .then(res => { const cp = res.clone(); caches.open(V).then(c => c.put('/index.html', cp)); return res; })
-        .catch(() => caches.match('/index.html'))
+        .then(res => { const cp = res.clone(); caches.open(V).then(c => c.put('./index.html', cp)); return res; })
+        .catch(() => caches.match('./index.html'))
     );
     return;
   }
-  // დანარჩენი: ქეში ჯერ, ფონზე განახლებით
   e.respondWith(
     caches.match(r, { ignoreSearch: true }).then(hit => {
       const net = fetch(r).then(res => {
